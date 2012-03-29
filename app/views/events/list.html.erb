@@ -1,0 +1,37 @@
+<div id='wrap'>
+
+  <div id='external-events'>
+    <div class='external-event'>
+      <%= link_to "My Calendar", events_path %>
+    </div>
+  </div>
+
+  <div class="ui-widget" style="float: left; padding-left: 20px">
+    <table class="ui-widget ui-widget-content">
+	  	<thead>
+        <tr class="ui-widget-header">
+          <th>Title</th>
+          <th>Repeat</th>
+          <th>Start</th>
+          <th>End</th>
+          <th>Control</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <% @events.each do |event| %>
+          <tr class="event_<%= event.id %> <%= (event.repeat || Event.notify_types.first).downcase %>">
+            <td><%= event.title %></td>
+            <td><%= event.repeat %></td>
+            <td><%= event.from.strftime("%Y-%m-%d %H:%M") %></td>
+            <td><%= event.to.blank? ? "" : event.to.strftime("%Y-%m-%d %H:%M") %></td>
+            <td><%= link_to "Delete", event_path(event), :confirm => "Are you sure?", :method => :delete, :remote => true %></td>
+          </tr>
+        <% end %>
+      <tbody>
+
+    </table>
+  </div>
+
+</div>
+

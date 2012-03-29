@@ -1,0 +1,104 @@
+/*
+ * This is a manifest file that'll automatically include all the stylesheets available in this directory
+ * and any sub-directories. You're free to add application-wide styles to this file and they'll appear at
+ * the top of the compiled file, but it's generally better to create a new file per style scope.
+ *= require_self
+ *= require_tree .
+*/
+	body {
+		margin-top: 20px;
+		text-align: center;
+		font-size: 14px;
+		font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
+		}
+
+	#wrap {
+		width: 1100px;
+		margin: 0 auto;
+		}
+
+	#external-events {
+		float: left;
+		width: 150px;
+		padding: 0 10px;
+		border: 1px solid #ccc;
+		background: #eee;
+		text-align: left;
+		}
+
+	#external-events h4 {
+		font-size: 16px;
+		margin-top: 0;
+		padding-top: 1em;
+		}
+
+	.external-event { /* try to mimick the look of a real event */
+		margin: 10px 0;
+		padding: 2px 4px;
+		background: #3366CC;
+		color: #fff;
+		font-size: .85em;
+		cursor: pointer;
+		}
+
+	#external-events p {
+		margin: 1.5em 0;
+		font-size: 11px;
+		color: #666;
+		}
+
+	#external-events p input {
+		margin: 0;
+		vertical-align: middle;
+		}
+
+	#calendar {
+		float: right;
+		width: 900px;
+	}
+
+	.once,
+	.once .fc-event-skin,
+	.fc-agenda .once .fc-event-time,
+	.once a {
+    background-color: #D34622; /* background color */
+    border-color: #D34622;     /* border color */
+    color: #FFFFFF;              /* text color */
+   }
+
+	.daily,
+	.daily .fc-event-skin,
+	.fc-agenda .fc-event-skin.daily.fc-event-time,
+	.fc-event-skin.daily a {
+    background-color: #39DA34; /* background color */
+    border-color: #39DA34;     /* border color */
+    color: #FFFFFF;              /* text color */
+   }
+
+	.weekly,
+	.weekly .fc-event-skin,
+	.fc-agenda .fc-event-skin.weekly.fc-event-time,
+	.fc-event-skin.weekly a {
+    background-color: #F68C1D; /* background color */
+    border-color: #F68C1D;     /* border color */
+    color: black;              /* text color */
+   }
+
+	.monthly,
+	.monthly .fc-event-skin,
+	.fc-agenda .fc-event-skin.monthly.fc-event-time,
+	.fc-event-skin.monthly a {
+    background-color: #3366CC; /* background color */
+    border-color: #3366CC;     /* border color */
+    color: #FFFFFF;              /* text color */
+   }
+
+	.yearly,
+	.yearly .fc-event-skin,
+	.fc-agenda .fc-event-skin.yearly.fc-event-time,
+	.fc-event-skin.yearly a {
+    background-color: black;
+    border-color: black;
+    color: red;
+   }
+
