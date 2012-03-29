@@ -123,7 +123,7 @@ DEPENDENCIES
   devise
   jquery-rails
   json
-  pg
+  pg (~> 0.13.2)
   rails (= 3.1.0)
   sass-rails (~> 3.1.0)
   uglifier
