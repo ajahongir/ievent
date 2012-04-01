@@ -25,7 +25,7 @@
             <td><%= event.repeat %></td>
             <td><%= event.from.strftime("%Y-%m-%d %H:%M") %></td>
             <td><%= event.to.blank? ? "" : event.to.strftime("%Y-%m-%d %H:%M") %></td>
-            <td><%= link_to "Delete", event_path(event), :confirm => "Are you sure?", :method => :delete, :remote => true %></td>
+            <td><%= link_to "Delete", event_path(event), :id => event.id, :class => "event" %></td>
           </tr>
         <% end %>
       <tbody>
@@ -34,4 +34,17 @@
   </div>
 
 </div>
+<script>
+  $('.event').click(function(eventElement){
+    if(confirm("Are you sure?")){
+	    $.ajax({
+	      url: "<%= events_path %>/" + this.id,
+	      type: 'POST',
+		    beforeSend: function(xhr) { xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content')) },
+		    data: {"_method": "put"}
+	    })
+    }
+    return false;
+  }
+</script>
 
