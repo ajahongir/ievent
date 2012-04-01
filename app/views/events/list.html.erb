@@ -41,10 +41,10 @@
 	      url: "<%= events_path %>/" + this.id,
 	      type: 'POST',
 		    beforeSend: function(xhr) { xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content')) },
-		    data: {"_method": "put"}
+		    data: {"_method": "delete"}
 	    })
     }
     return false;
-  }
+  });
 </script>
 
