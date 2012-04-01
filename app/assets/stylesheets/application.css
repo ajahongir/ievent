@@ -56,8 +56,13 @@
 		float: right;
 		width: 900px;
 	}
-
+	#user_nav {
+		padding: 10px;
+		color: grey;
+		text-align: right;
+	}
 	.once,
+	.fc-event-skin.once,
 	.once .fc-event-skin,
 	.fc-agenda .once .fc-event-time,
 	.once a {
@@ -67,6 +72,7 @@
    }
 
 	.daily,
+	.fc-event-skin.daily,
 	.daily .fc-event-skin,
 	.fc-agenda .fc-event-skin.daily.fc-event-time,
 	.fc-event-skin.daily a {
@@ -76,6 +82,7 @@
    }
 
 	.weekly,
+	.fc-event-skin.weekly,
 	.weekly .fc-event-skin,
 	.fc-agenda .fc-event-skin.weekly.fc-event-time,
 	.fc-event-skin.weekly a {
@@ -85,6 +92,7 @@
    }
 
 	.monthly,
+	.fc-event-skin.monthly,
 	.monthly .fc-event-skin,
 	.fc-agenda .fc-event-skin.monthly.fc-event-time,
 	.fc-event-skin.monthly a {
@@ -94,6 +102,7 @@
    }
 
 	.yearly,
+	.fc-event-skin.yearly,
 	.yearly .fc-event-skin,
 	.fc-agenda .fc-event-skin.yearly.fc-event-time,
 	.fc-event-skin.yearly a {
