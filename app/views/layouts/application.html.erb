@@ -10,10 +10,13 @@
   <link rel='stylesheet' type='text/css' href='/assets/fullcalendar-1.5.3/fullcalendar/fullcalendar.css' />
   <link rel='stylesheet' type='text/css' href='/assets/fullcalendar-1.5.3/fullcalendar/fullcalendar.print.css' media='print' />
   <link rel='stylesheet' type='text/css' href='/assets/fullcalendar-1.5.3/jquery/css/smoothness/jquery-ui-1.8.18.custom.css' />
+  <link rel='stylesheet' type='text/css' href='/assets/tipsy/src/stylesheets/tipsy.css' />
 
 	<script src='/assets/fullcalendar-1.5.3/jquery/jquery-1.7.1.min.js' type='text/javascript' ></script>
 	<script src='/assets/fullcalendar-1.5.3/jquery/jquery-ui-1.8.18.custom.min.js' type='text/javascript' ></script>
 	<script src='/assets/fullcalendar-1.5.3/fullcalendar/fullcalendar.min.js' type='text/javascript' ></script>
+	<script src='/assets/tipsy/src/javascripts/jquery.tipsy.js' type='text/javascript' ></script>
+
 	<%= csrf_meta_tags %>
 </head>
 <body>
@@ -27,13 +30,15 @@
 		  <%= link_to "Sign up", new_user_registration_path %> or <%= link_to "sign in", new_user_session_path %>
 		<% end %>
 	</div>
-	<style>
-		#user_nav {padding: 10px; color: grey;text-align: right;}
-	</style>
+
 	<p class="notice"><%= notice %></p>
   <p class="alert"><%= alert %></p>
 
 	<%= yield %>
+
+  <script type='text/javascript'>
+    $('.live-tipsy').tipsy({live: true, gravity: 'e'});
+  </script>
 
 </body>
 </html>
