@@ -17,26 +17,18 @@ class EventsController < ApplicationController
   end
 
 	def create
-		if(params[:allDay].eql?("true"))
-			event = current_user.events.create(:title => params[:title], :repeat => params[:repeat], :allDay => true, :from => @from)
-		else
-			event = current_user.events.create(:title => params[:title], :repeat => params[:repeat], :from => @from, :to => @to)
-		end
+	  event = current_user.events.create(:title => params[:title], :repeat => params[:repeat], :from => @from, :to => @to, :allDay => @allDay)
 		render :json => {:id => event.id, :success => true}
 	end
 
 	def update
 		event = Event.find(params[:id])
-		if(params[:allDay].eql?("true"))
-			event.update_attributes({ :title => params[:title], :repeat => params[:repeat], :allDay => true, :from => @from, :to => nil })
-		else
-			event.update_attributes({ :title => params[:title], :repeat => params[:repeat], :allDay => true, :from => @from, :to => @to })
-		end
+		event.update_attributes({:title => params[:title], :repeat => params[:repeat], :from => @from, :to => @to, :allDay => @allDay})
 		render :nothing => true
 	end
 
 	def destroy
-  	@event=current_user.events.find(params[:id])
+  	@event = current_user.events.find(params[:id])
 		render :nothing => true and return unless @event
 		@event.destroy
 	end
@@ -44,8 +36,9 @@ class EventsController < ApplicationController
   private
 
   def check_date
+    @allDay = params[:allDay].eql?("true")
     @from = DateTime.strptime(params[:start], "%Y-%m-%d-%H-%M")
-    @to = (params[:end].blank? ? nil : DateTime.strptime(params[:end], "%Y-%m-%d-%H-%M"))
+    @to = ((params[:allDay].eql?("true") || params[:end].blank?) ? nil : DateTime.strptime(params[:end], "%Y-%m-%d-%H-%M"))
   end
 
 end
