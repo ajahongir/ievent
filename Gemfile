@@ -3,10 +3,10 @@ source 'http://rubygems.org'
 gem 'rails', '3.1.0'
 
 # Bundle edge Rails instead:
-# gem 'rails',     :git => 'git://github.com/rails/rails.git'
 
-gem "sqlite3", "~> 1.3.5"
-#gem "pg", "~> 0.13.2"
+# gem 'rails',     :git => 'git://github.com/rails/rails.git'
+#gem "sqlite3", "~> 1.3.5"
+gem "pg", "~> 0.13.2"
 
 gem 'json'
 
