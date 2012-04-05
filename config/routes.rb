@@ -1,15 +1,15 @@
 Ievent::Application.routes.draw do
 
   devise_for :users
-#	devise_for :users, #:path => "usuarios",
-#		:path_names => { :sign_in => 'login', :sign_out => 'logout', :password => 'secret', :confirmation => 'verification', :unlock => 'unblock', :registration => 'register', :sign_up => 'cmon_let_me_in' }
+# devise_for :users, #:path => "usuarios",
+#   :path_names => { :sign_in => 'login', :sign_out => 'logout', :password => 'secret', :confirmation => 'verification', :unlock => 'unblock', :registration => 'register', :sign_up => 'cmon_let_me_in' }
 
-#	devise_scope :user do
-#  	get "sign_in", :to => "user/sessions#new"
-#	end
+# devise_scope :user do
+#   get "sign_in", :to => "user/sessions#new"
+# end
 
-	resources :events do
-	  collection do
+  resources :events do
+    collection do
       get "list"
     end
   end

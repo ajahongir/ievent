@@ -8,7 +8,7 @@
 
   <div class="ui-widget" style="float: left; padding-left: 20px">
     <table class="ui-widget ui-widget-content">
-	  	<thead>
+      <thead>
         <tr class="ui-widget-header">
           <th>Title</th>
           <th>Repeat</th>
@@ -37,12 +37,12 @@
 <script>
   $('.event').click(function(eventElement){
     if(confirm("Are you sure?")){
-	    $.ajax({
-	      url: "<%= events_path %>/" + this.id,
-	      type: 'POST',
-		    beforeSend: function(xhr) { xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content')) },
-		    data: {"_method": "delete"}
-	    })
+      $.ajax({
+        url: "<%= events_path %>/" + this.id,
+        type: 'POST',
+        beforeSend: function(xhr) { xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content')) },
+        data: {"_method": "delete"}
+      })
     }
     return false;
   });
