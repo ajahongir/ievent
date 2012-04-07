@@ -1,0 +1,34 @@
+#wrap
+  #external-events
+    .external-event
+      = link_to "My Calendar", events_path   
+  %div{:class => "ui-widget", :style => "float: left; padding-left: 20px"}
+    %table.ui-widget.ui-widget-content
+      %thead
+        %tr.ui-widget-header
+          %th Title
+          %th Repeat
+          %th Start
+          %th End
+          %th Control
+      %tbody
+        - @events.each do |event|
+          %tr{:class => "event_#{event.id} #{(event.repeat || Event.notify_types.first).downcase}"}
+            %td= event.title
+            %td= event.repeat
+            %td= event.from.strftime("%Y-%m-%d %H:%M")
+            %td= event.to.blank? ? "" : event.to.strftime("%Y-%m-%d %H:%M")
+            %td= link_to "Delete", event_path(event), :id => event.id, :class => "event"          
+        
+:javascript
+  $('.event').click(function(eventElement){
+    if(confirm("Are you sure?")){
+      $.ajax({
+        url: #{events_path}/ + this.id,
+        type: 'POST',
+        beforeSend: function(xhr) { xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content')) },
+        data: {"_method": "delete"}
+      })
+    }
+    return false;
+  });

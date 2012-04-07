@@ -1,52 +1,43 @@
-<div id='wrap'>
+#wrap
+  #external-events
+    %h4 Most Events
+    %h7 (drag & drop)
+    %div{:class => "external-event live-tipsy once", :title => "Once-off meeting"} Meeting
+    %div{:class => "external-event live-tipsy daily", :title => "Daily meeting"} Meeting
+    %div{:class => "external-event live-tipsy weekly", :title => "Weekly meeting"} Meeting
+    %div{:class => "external-event live-tipsy monthly", :title => "Monthly meeting"} Meeting
+    %div{:class => "external-event live-tipsy once", :title => "Once-off 'Out of office'"} Out of office
+    %div{:class => "external-event live-tipsy daily", :title => "Daily 'Out of office'"} Out of office
+    %div{:class => "external-event live-tipsy weekly", :title => "Weekly 'Out of office'"} Out of office
+    %div{:class => "external-event live-tipsy monthly", :title => "Monthly 'Out of office'"} Out of office
+    %div{:class => "external-event live-tipsy monthly", :title => "Monthly vocation"} Vocation
+    %div{:class => "external-event live-tipsy yearly", :title => "Yearly vocation"} Vocation
+    %div{:class => "external-event live-tipsyyearly", :title => "Yearly birthday"} Birthday
+    %div= link_to "My events", list_events_path
 
-  <div id='external-events'>
-    <h4>Most Events</h4>
-    (<h7>drag & drop</h7>)
-    <div class="external-event live-tipsy once" title="Once-off meeting">Meeting</div>
-    <div class="external-event live-tipsy daily" title="Daily meeting">Meeting</div>
-    <div class="external-event live-tipsy weekly" title="Weekly meeting">Meeting</div>
-    <div class="external-event live-tipsy monthly" title="Monthly meeting">Meeting</div>
-    <div class="external-event live-tipsy once" title="Once-off 'Out of office'">Out of office</div>
-    <div class="external-event live-tipsy daily" title="Daily 'Out of office'">Out of office</div>
-    <div class="external-event live-tipsy weekly" title="Weekly 'Out of office'">Out of office</div>
-    <div class="external-event live-tipsy monthly" title="Monthly 'Out of office'">Out of office</div>
-    <div class="external-event live-tipsy monthly" title="Monthly vocation">Vocation</div>
-    <div class="external-event live-tipsy yearly" title="Yearly vocation">Vocation</div>
-    <div class="external-event live-tipsyyearly" title="Yearly birthday">Birthday</div>
-    <div><%= link_to "My events", list_events_path %></div>
-    <div class="">
+  #calendar
 
-    </div>
-</div>
+  #eventDialog.dialog.ui-helper-hidden
 
+    %table
+      %tr
+        %td{:align => "left", :style => "padding: 5px 0px"} 
+          = label_tag "Title: "
+        %td{:align => "left", :style => "padding: 5px 0px"} 
+          = text_field_tag :title
+      %tr
+        %td{:align => "left", :style => "padding: 5px 0px"} 
+          = label_tag "Repeat: "
+        %td{:align => "left", :style => "padding: 5px 0px"} 
+          = select_tag(:repeat, options_for_select(Event.notify_types.map { |type| [type, type] }, Event.notify_types.first ))
 
-  <div id='calendar'></div>
+  %div{:style => "clear: both"}
 
-  <div id="eventDialog" class="dialog ui-helper-hidden">
-
-    <table>
-      <tr>
-        <td align="left" style="padding: 5px 0px" ><%= label_tag "Title: " %></td>
-        <td align="left" style="padding: 5px 0px"><%= text_field_tag :title %></td>
-      </tr>
-      <tr>
-        <td align="left" style="padding: 5px 0px"><%= label_tag "Repeat: " %></td>
-        <td align="left" style="padding: 5px 0px"><%= select_tag(:repeat, options_for_select(Event.notify_types.map { |type| [type, type] }, Event.notify_types.first )) %></td>
-      </tr>
-    </table>
-
-  </div>
-
-  <div style="clear: both"></div>
-
-</div>
-
-<script type='text/javascript'>
+:javascript
 
   var event_title = $("#title");
   var event_repeat = $("#repeat");
-
+  
   $(document).ready(function() {
 
     function formatted_date(date) {
@@ -152,7 +143,7 @@
       editable: true,
       selectable: true,
       selectHelper: true,
-      droppable: true, // this allows things to be dropped onto the calendar !!!
+      droppable: true,      
       header: {
         left: 'prev,next today',
         center: 'title',
@@ -219,7 +210,7 @@
       data = {title: eventObject.title, repeat: eventObject.repeat, start: formatted_date(eventObject.start)}
       if(eventObject.end) { data["end"] = formatted_date(eventObject.end)}
       if(eventObject.allDay) { data["allDay"] = eventObject.allDay } else { data["allDay"] = false }
-      $.ajax({url: "<%= events_path %>",
+      $.ajax({url: "#{events_path}",
         type: 'POST',
         beforeSend: function(xhr) { xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
         data: data,
@@ -227,8 +218,8 @@
       })
     }
 
-    function load(){
-      $.get("<%= events_path %>").success(function(response){
+    function load(){      
+      $.get("#{events_path}").success(function(response){
         $.each(response, function(index, item){
           $('#calendar').fullCalendar('renderEvent', item, true);
         });
@@ -240,7 +231,7 @@
       data = {"_method": "put", title: eventElement.title, repeat: eventElement.repeat, start: formatted_date(eventElement.start)}
       if(eventElement.end) { data["end"] = formatted_date(eventElement.end) }
       if(eventElement.allDay) { data["allDay"] = eventElement.allDay } else { data["allDay"] = false }
-      $.ajax({url: "<%= events_path %>/" + eventElement.id,
+      $.ajax({url: "#{events_path}/" + eventElement.id,
         type: 'POST',
         beforeSend: function(xhr) { xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content')) },
         data: data,
@@ -249,7 +240,7 @@
     }
 
     function remove(eventElement, callback) {
-      $.ajax({url: "<%= events_path %>/" + eventElement.id,
+      $.ajax({url: "#{events_path}/" + eventElement.id,
         type: 'POST',
         beforeSend: function(xhr) { xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content')) },
         data: {"_method": "delete"},
@@ -257,6 +248,3 @@
       })
     }
   });
-
-</script>
-

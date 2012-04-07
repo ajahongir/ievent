@@ -15,8 +15,10 @@ group :production do
 end
 
 gem 'json'
+gem 'haml-rails'
 
 gem "execjs", "~> 1.3.0"
+gem 'therubyracer'
 
 gem 'acts_as_state_machine'
 gem 'devise'
