@@ -2,17 +2,17 @@
   #external-events
     %h4 Most Events
     %h7 (drag & drop)
-    %div{:class => "external-event live-tipsy once", :title => "Once-off meeting"} Meeting
-    %div{:class => "external-event live-tipsy daily", :title => "Daily meeting"} Meeting
-    %div{:class => "external-event live-tipsy weekly", :title => "Weekly meeting"} Meeting
-    %div{:class => "external-event live-tipsy monthly", :title => "Monthly meeting"} Meeting
-    %div{:class => "external-event live-tipsy once", :title => "Once-off 'Out of office'"} Out of office
-    %div{:class => "external-event live-tipsy daily", :title => "Daily 'Out of office'"} Out of office
-    %div{:class => "external-event live-tipsy weekly", :title => "Weekly 'Out of office'"} Out of office
-    %div{:class => "external-event live-tipsy monthly", :title => "Monthly 'Out of office'"} Out of office
-    %div{:class => "external-event live-tipsy monthly", :title => "Monthly vocation"} Vocation
-    %div{:class => "external-event live-tipsy yearly", :title => "Yearly vocation"} Vocation
-    %div{:class => "external-event live-tipsyyearly", :title => "Yearly birthday"} Birthday
+    .external-event.live-tipsy.once{:title => "Once-off meeting"} Meeting
+    .external-event.live-tipsy.daily{:title => "Daily meeting"} Meeting
+    .external-event.live-tipsy.weekly{:title => "Weekly meeting"} Meeting
+    .external-event.live-tipsy.monthly{:title => "Monthly meeting"} Meeting
+    .external-event.live-tipsy.once{:title => "Once-off 'Out of office'"} Out of office
+    .external-event.live-tipsy.daily{:title => "Daily 'Out of office'"} Out of office
+    .external-event.live-tipsy.weekly{:title => "Weekly 'Out of office'"} Out of office
+    .external-event.live-tipsy.monthly{:title => "Monthly 'Out of office'"} Out of office
+    .external-event.live-tipsy.monthly{:title => "Monthly vocation"} Vocation
+    .external-event.live-tipsy.yearly{:title => "Yearly vocation"} Vocation
+    .external-event.live-tipsyyearly{:title => "Yearly birthday"} Birthday
     %div= link_to "My events", list_events_path
 
   #calendar
@@ -147,7 +147,7 @@
       header: {
         left: 'prev,next today',
         center: 'title',
-        right: 'month,agendaWeek,agendaDay'
+        right: 'month,week,basicWeek,basicDay'
       },
       eventClick: function(calEvent, jsEvent, view) {
         dialog.dialog( "option" , "event", calEvent);

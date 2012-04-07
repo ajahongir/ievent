@@ -2,7 +2,7 @@
   #external-events
     .external-event
       = link_to "My Calendar", events_path   
-  %div{:class => "ui-widget", :style => "float: left; padding-left: 20px"}
+  .ui-widget{:style => "float: left; padding-left: 20px"}
     %table.ui-widget.ui-widget-content
       %thead
         %tr.ui-widget-header
@@ -13,7 +13,7 @@
           %th Control
       %tbody
         - @events.each do |event|
-          %tr{:class => "event_#{event.id} #{(event.repeat || Event.notify_types.first).downcase}"}
+          %tr.event_#{event.id}.#{(event.repeat || Event.notify_types.first).downcase}
             %td= event.title
             %td= event.repeat
             %td= event.from.strftime("%Y-%m-%d %H:%M")
