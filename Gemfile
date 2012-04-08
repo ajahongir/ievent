@@ -23,6 +23,8 @@ gem 'therubyracer'
 gem 'acts_as_state_machine'
 gem 'devise'
 
+gem 'coffee-filter'
+
 # Gems used only for assets and not required
 # in production environments by default.
 group :assets do

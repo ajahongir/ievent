@@ -30,7 +30,7 @@ class EventsController < ApplicationController
   def destroy
     @event = current_user.events.find(params[:id])
     render :nothing => true and return unless @event
-    @event.destroy
+    @event.destroy    
   end
 
   private

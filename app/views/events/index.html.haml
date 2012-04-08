@@ -2,249 +2,213 @@
   #external-events
     %h4 Most Events
     %h7 (drag & drop)
-    .external-event.live-tipsy.once{:title => "Once-off meeting"} Meeting
-    .external-event.live-tipsy.daily{:title => "Daily meeting"} Meeting
-    .external-event.live-tipsy.weekly{:title => "Weekly meeting"} Meeting
-    .external-event.live-tipsy.monthly{:title => "Monthly meeting"} Meeting
-    .external-event.live-tipsy.once{:title => "Once-off 'Out of office'"} Out of office
-    .external-event.live-tipsy.daily{:title => "Daily 'Out of office'"} Out of office
-    .external-event.live-tipsy.weekly{:title => "Weekly 'Out of office'"} Out of office
-    .external-event.live-tipsy.monthly{:title => "Monthly 'Out of office'"} Out of office
-    .external-event.live-tipsy.monthly{:title => "Monthly vocation"} Vocation
-    .external-event.live-tipsy.yearly{:title => "Yearly vocation"} Vocation
-    .external-event.live-tipsyyearly{:title => "Yearly birthday"} Birthday
+    .external-event.live-tipsy.once{ :title => "Once-off meeting" } Meeting
+    .external-event.live-tipsy.daily{ :title => "Daily meeting" } Meeting
+    .external-event.live-tipsy.weekly{ :title => "Weekly meeting" } Meeting
+    .external-event.live-tipsy.monthly{ :title => "Monthly meeting" } Meeting
+    .external-event.live-tipsy.once{ :title => "Once-off 'Out of office'" } Out of office
+    .external-event.live-tipsy.daily{ :title => "Daily 'Out of office'"} Out of office
+    .external-event.live-tipsy.weekly{ :title => "Weekly 'Out of office'"} Out of office
+    .external-event.live-tipsy.monthly{ :title => "Monthly 'Out of office'"} Out of office
+    .external-event.live-tipsy.monthly{ :title => "Monthly vocation" } Vocation
+    .external-event.live-tipsy.yearly{ :title => "Yearly vocation" } Vocation
+    .external-event.live-tipsyyearly{ :title => "Yearly birthday" } Birthday
     %div= link_to "My events", list_events_path
 
   #calendar
 
   #eventDialog.dialog.ui-helper-hidden
-
     %table
       %tr
-        %td{:align => "left", :style => "padding: 5px 0px"} 
+        %td{ :align => "left", :style => "padding: 5px 0px" } 
           = label_tag "Title: "
-        %td{:align => "left", :style => "padding: 5px 0px"} 
+        %td{ :align => "left", :style => "padding: 5px 0px" } 
           = text_field_tag :title
       %tr
-        %td{:align => "left", :style => "padding: 5px 0px"} 
+        %td{ :align => "left", :style => "padding: 5px 0px" } 
           = label_tag "Repeat: "
-        %td{:align => "left", :style => "padding: 5px 0px"} 
+        %td{ :align => "left", :style => "padding: 5px 0px" } 
           = select_tag(:repeat, options_for_select(Event.notify_types.map { |type| [type, type] }, Event.notify_types.first ))
+  %div{ :style => "clear: both" }
 
-  %div{:style => "clear: both"}
+:coffeescript
+  $(document).ready ->
 
-:javascript
-
-  var event_title = $("#title");
-  var event_repeat = $("#repeat");
+  event_title = $("#title")
+  event_repeat = $("#repeat")
   
-  $(document).ready(function() {
+  dialog = $("#eventDialog")
 
-    function formatted_date(date) {
-      if(date){
-        return [date.getFullYear(), date.getMonth() + 1, date.getDate(), date.getHours(), date.getMinutes()].join("-")
-      } else {
-        return ""
+  formatted_date = (date) ->
+    if date
+      [date.getFullYear(), date.getMonth() + 1, date.getDate(), date.getHours(), date.getMinutes()].join "-"
+    else
+      ""
+  
+  $('#external-events div.external-event').each () ->
+    eventObject = {
+      title: $.trim $(this).text()
+    }
+
+    $(this).data 'eventObject', eventObject
+
+    $(this).draggable
+      zIndex: 999
+      revert: true
+      revertDuration: 0
+
+  insertEvent = (eventObject, callback) ->
+    data = {
+      title: eventObject.title
+      repeat: eventObject.repeat
+      start: formatted_date eventObject.start
+    }  
+    if eventObject.end
+      data["end"] = formatted_date eventObject.end
+    if eventObject.allDay
+      data["allDay"] = eventObject.allDay
+    else
+      data["allDay"] = false
+    $.ajax
+      url: "#{events_path}"
+      type: 'POST'
+      beforeSend: (xhr) -> 
+        xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))
+      data: data
+      success: callback
+
+  load = () ->      
+    $.get("#{events_path}").success (response) ->
+      $.each response, (index, item) ->
+        $('#calendar').fullCalendar 'renderEvent', item, true    
+  
+  update = (eventElement, callback) ->
+    data = {
+      "_method": "put"
+      title: eventElement.title
+      repeat: eventElement.repeat
+      start: formatted_date eventElement.start
+    }
+    if eventElement.end 
+      data["end"] = formatted_date eventElement.end
+    if eventElement.allDay
+      data["allDay"] = eventElement.allDay 
+    else 
+      data["allDay"] = false
+    $.ajax
+      url: "#{events_path}/" + eventElement.id
+      type: 'POST'
+      beforeSend: (xhr) -> 
+        xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))
+      data: data
+      success: callback
+  
+  remove = (eventElement, callback) ->
+    $.ajax
+      url: "#{events_path}/" + eventElement.id
+      type: 'POST'
+      beforeSend: (xhr) -> 
+        xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))
+      data: {"_method": "delete"}
+      success: callback
+  
+  calendar = $('#calendar').fullCalendar
+    editable: true,
+    selectable: true,
+    selectHelper: true,
+    droppable: true,
+    header:
+      left: 'prev,next today'
+      center: 'title'
+      right: 'month,agendaWeek,agendaDay'
+    eventClick: (calEvent, jsEvent, view) ->
+      dialog.dialog "option", "event", calEvent
+      dialog.dialog 'open'      
+    eventDrop: (event, dayDelta, minuteDelta, allDay, revertFunc) ->
+      ext = if allDay then {} else {allDay: allDay}
+      msg = if allDay then "Event is now all-day" else "Event has a time-of-day"
+      alert(msg)
+      if (!confirm("Are you sure about this change?"))
+        revertFunc()
+      else
+        update $.extend(event, ext)        
+      calendar.fullCalendar 'unselect'
+    eventResize: (event,dayDelta,minuteDelta,revertFunc) ->
+      if(!confirm("is this okay?"))
+        revertFunc()
+      else
+        update $.extend(event, {allDay: event.allDay})
+    select: ( startDate, endDate, allDay, jsEvent, view ) ->
+      dialog.dialog "option", "mode", "new"
+      dialog.dialog "option", "event", {start: startDate, end: endDate, allDay: allDay}
+      dialog.dialog "open"
+    drop: (date, allDay) ->
+      _event = $(this)        
+      originalEventObject = _event.data 'eventObject'   
+      copiedEventObject = $.extend {}, originalEventObject
+      copiedEventObject.start = date
+      copiedEventObject.allDay = allDay
+      $.each ["once", "daily", "weekly", "monthly", "yearly"], (index, item) ->
+        if _event.hasClass item
+          copiedEventObject.repeat = item
+          copiedEventObject.className = item
+
+      insertEvent copiedEventObject, (response) ->
+        $('#calendar').fullCalendar('renderEvent', $.extend(copiedEventObject, {id: response.id} ), true)
+    
+  dialog.dialog
+    modal: true
+    autoOpen: false
+    width: 400
+    title: "Event"
+    close: (event, ui) ->
+      event_title.val ""
+      event_repeat.val ""
+      calendar.fullCalendar 'rerenderEvents'
+      $(this).dialog "option" , "event" , null
+      $(this).dialog "option", "mode", null
+    open: (event, ui) ->
+      if $(this).dialog("option", "mode") == "new"
+        $(":button:contains('Delete')").attr("disabled","disabled").addClass "ui-state-disabled"
+        event_title.val ""
+        event_repeat.val ""
+      else
+        $(":button:contains('Delete')").removeAttr("disabled").removeClass "ui-state-disabled"
+        event = $(this).dialog "option", "event"
+        event_title.val event.title
+        event_repeat.val event.repeat
+    buttons: [
+      {
+        text: "Save"
+        click: () ->
+          event = $(this).dialog "option", "event"
+          event.title = event_title.val()
+          event.repeat = event_repeat.val()
+          if event.title
+            if $(this).dialog("option", "mode" ) == "new"
+              insertEvent event, (response) ->
+                calendar.fullCalendar('renderEvent', $.extend(event, {id: response.id, className: event.repeat.toLowerCase() }), true)
+                dialog.dialog "close"
+            else
+              update( $.extend(event, {className: event.repeat.toLowerCase()}) , () ->
+                dialog.dialog "close"
+              )
+      } 
+      {
+        text: "Delete"
+        click: () ->
+          event = $(this).dialog "option" , "event"
+          if event
+            remove event, () ->
+              calendar.fullCalendar 'removeEvents', event.id
+              dialog.dialog "close"
       }
-    }
-
-    var dialog = $("#eventDialog");
-    $(function() {
-      dialog.dialog({
-        modal: true,
-        autoOpen: false,
-        width: 400,
-        title: "Event",
-        close: function(event, ui) {
-          event_title.val("");
-          event_repeat.val("");
-          calendar.fullCalendar( 'rerenderEvents' );
-          $(this).dialog( "option" , "event" , null );
-          $(this).dialog( "option", "mode", null )
-        },
-        open: function(event, ui) {
-          if($(this).dialog( "option", "mode" )=="new") {
-            $(":button:contains('Delete')").attr("disabled","disabled").addClass("ui-state-disabled");
-            event_title.val("");
-            event_repeat.val("");
-          } else {
-            $(":button:contains('Delete')").removeAttr("disabled").removeClass("ui-state-disabled");
-            event = $(this).dialog( "option", "event" );
-            event_title.val(event.title);
-            event_repeat.val(event.repeat);
-          }
-        },
-        buttons: [{
-          text: "Save",
-          click: function() {
-            event = $(this).dialog( "option" , "event" );
-            event.title = event_title.val();
-            event.repeat = event_repeat.val();
-            if (event.title) {
-              if($(this).dialog( "option", "mode" )=="new") {
-                insertEvent(event, function(response){
-                  calendar.fullCalendar('renderEvent', $.extend(event, {id: response.id, className: event.repeat.toLowerCase() }), true );
-                  dialog.dialog("close");
-                });
-              } else {
-                update( $.extend(event, {className: event.repeat.toLowerCase()}) , function() {
-                  dialog.dialog("close");
-                })
-              }
-            }
-          }
-        }, {
-          text: "Delete",
-          click: function() {
-            event = $(this).dialog( "option" , "event" );
-            if(event) {
-              remove(event, function() {
-                calendar.fullCalendar( 'removeEvents', event.id )
-                dialog.dialog("close");
-              })
-            }
-          }
-        }, {
-          text: "Cancel",
-          click: function() {$(this).dialog("close");}
-        }]
-      });
-    });
-
-
-    /* initialize the external events
-    -----------------------------------------------------------------*/
-
-    $('#external-events div.external-event').each(function() {
-
-      // create an Event Object (http://arshaw.com/fullcalendar/docs/event_data/Event_Object/)
-      // it doesn't need to have a start or end
-      var eventObject = {
-        title: $.trim($(this).text()) // use the element's text as the event title
-      };
-
-      // store the Event Object in the DOM element so we can get to it later
-      $(this).data('eventObject', eventObject);
-
-      // make the event draggable using jQuery UI
-      $(this).draggable({
-        zIndex: 999,
-        revert: true,      // will cause the event to go back to its
-        revertDuration: 0  //  original position after the drag
-      });
-
-    });
-
-
-    /* initialize the calendar
-    -----------------------------------------------------------------*/
-
-    var calendar = $('#calendar').fullCalendar({
-      editable: true,
-      selectable: true,
-      selectHelper: true,
-      droppable: true,      
-      header: {
-        left: 'prev,next today',
-        center: 'title',
-        right: 'month,week,basicWeek,basicDay'
-      },
-      eventClick: function(calEvent, jsEvent, view) {
-        dialog.dialog( "option" , "event", calEvent);
-        dialog.dialog('open');
-      },
-      eventDrop: function(event, dayDelta, minuteDelta, allDay, revertFunc) {
-        ext = allDay ? {} : {allDay: allDay}
-        msg = allDay ? "Event is now all-day" : "Event has a time-of-day"
-        alert(msg);
-        if (!confirm("Are you sure about this change?")) {
-            revertFunc();
-          } else {
-            update($.extend(event, ext))
-          }
-        calendar.fullCalendar('unselect');
-      },
-      eventResize: function(event,dayDelta,minuteDelta,revertFunc) {
-        if(!confirm("is this okay?")) {
-            revertFunc();
-        } else {
-          update($.extend(event, {allDay: event.allDay}))
-        }
-      },
-      select: function( startDate, endDate, allDay, jsEvent, view ) {
-        dialog.dialog("option", "mode", "new");
-        dialog.dialog("option", "event", {start: startDate, end: endDate, allDay: allDay});
-        dialog.dialog("open")
-      },
-      drop: function(date, allDay) { // this function is called when something is dropped
-        var _event = $(this)
-        // retrieve the dropped element's stored Event Object
-        var originalEventObject = _event.data('eventObject');
-
-        // we need to copy it, so that multiple events don't have a reference to the same object
-        var copiedEventObject = $.extend({}, originalEventObject);
-
-        // assign it the date that was reported
-        copiedEventObject.start = date;
-        copiedEventObject.allDay = allDay;
-
-        $.each(["once", "daily", "weekly", "monthly", "yearly"], function(index, item){
-
-          if(_event.hasClass(item)){
-            copiedEventObject.repeat = item;
-            copiedEventObject.className = item;
-          }
-        });
-
-        insertEvent(copiedEventObject, function(response){
-          // render the event on the calendar
-          // the last `true` argument determines if the event "sticks" (http://arshaw.com/fullcalendar/docs/event_rendering/renderEvent/)
-          $('#calendar').fullCalendar('renderEvent', $.extend(copiedEventObject, {id: response.id} ), true);
-        });
-
+      {   
+        text: "Cancel"
+        click: () -> 
+          $(this).dialog "close"
       }
+    ]
 
-    });
-
-    function insertEvent(eventObject, callback){
-      data = {title: eventObject.title, repeat: eventObject.repeat, start: formatted_date(eventObject.start)}
-      if(eventObject.end) { data["end"] = formatted_date(eventObject.end)}
-      if(eventObject.allDay) { data["allDay"] = eventObject.allDay } else { data["allDay"] = false }
-      $.ajax({url: "#{events_path}",
-        type: 'POST',
-        beforeSend: function(xhr) { xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
-        data: data,
-        success: callback
-      })
-    }
-
-    function load(){      
-      $.get("#{events_path}").success(function(response){
-        $.each(response, function(index, item){
-          $('#calendar').fullCalendar('renderEvent', item, true);
-        });
-      });
-    }
-    load();
-
-    function update(eventElement, callback){
-      data = {"_method": "put", title: eventElement.title, repeat: eventElement.repeat, start: formatted_date(eventElement.start)}
-      if(eventElement.end) { data["end"] = formatted_date(eventElement.end) }
-      if(eventElement.allDay) { data["allDay"] = eventElement.allDay } else { data["allDay"] = false }
-      $.ajax({url: "#{events_path}/" + eventElement.id,
-        type: 'POST',
-        beforeSend: function(xhr) { xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content')) },
-        data: data,
-        success: callback
-      })
-    }
-
-    function remove(eventElement, callback) {
-      $.ajax({url: "#{events_path}/" + eventElement.id,
-        type: 'POST',
-        beforeSend: function(xhr) { xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content')) },
-        data: {"_method": "delete"},
-        success: callback
-      })
-    }
-  });
+  load()
+  $('.live-tipsy').tipsy {live: true, gravity: 'w'}

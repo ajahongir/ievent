@@ -6,4 +6,7 @@
 //
 //= require jquery
 //= require jquery_ujs
-//= require_tree .
+//= require fullcalendar-1.5.3/jquery/jquery-ui-1.8.18.custom.min.js
+//= require tipsy/src/javascripts/jquery.tipsy.js
+//= require fullcalendar-1.5.3/fullcalendar/fullcalendar.min.js
+//= require events

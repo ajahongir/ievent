@@ -1,7 +1,7 @@
 !!!
 %html
   %head
-    %meta{:content => "text/html; charset=utf-8", "http-equiv" => "Content-type"}
+    %meta{ :content => "text/html; charset=utf-8", "http-equiv" => "Content-type" }
   %body
     %h1 Hi, = @user.name
     %h1 today you have = @event.title at = @event.created_at.strftime("%Y-%m-%d %H:%M")    
