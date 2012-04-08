@@ -12,7 +12,7 @@
     .external-event.live-tipsy.monthly{ :title => "Monthly 'Out of office'"} Out of office
     .external-event.live-tipsy.monthly{ :title => "Monthly vocation" } Vocation
     .external-event.live-tipsy.yearly{ :title => "Yearly vocation" } Vocation
-    .external-event.live-tipsyyearly{ :title => "Yearly birthday" } Birthday
+    .external-event.live-tipsy.yearly{ :title => "Yearly birthday" } Birthday
     %div= link_to "My events", list_events_path
 
   #calendar
@@ -20,15 +20,15 @@
   #eventDialog.dialog.ui-helper-hidden
     %table
       %tr
-        %td{ :align => "left", :style => "padding: 5px 0px" } 
+        %td{ :align => "left", :style => "padding: 5px 0px" }
           = label_tag "Title: "
-        %td{ :align => "left", :style => "padding: 5px 0px" } 
+        %td{ :align => "left", :style => "padding: 5px 0px" }
           = text_field_tag :title
       %tr
-        %td{ :align => "left", :style => "padding: 5px 0px" } 
+        %td{ :align => "left", :style => "padding: 5px 0px" }
           = label_tag "Repeat: "
-        %td{ :align => "left", :style => "padding: 5px 0px" } 
-          = select_tag(:repeat, options_for_select(Event.notify_types.map { |type| [type, type] }, Event.notify_types.first ))
+        %td{ :align => "left", :style => "padding: 5px 0px" }
+          = select_tag(:repeat, options_for_select(Event.notify_types.map { |type| [type, type.downcase] }, Event.notify_types.first.downcase ))
   %div{ :style => "clear: both" }
 
 :coffeescript
@@ -36,7 +36,7 @@
 
   event_title = $("#title")
   event_repeat = $("#repeat")
-  
+
   dialog = $("#eventDialog")
 
   formatted_date = (date) ->
@@ -44,7 +44,7 @@
       [date.getFullYear(), date.getMonth() + 1, date.getDate(), date.getHours(), date.getMinutes()].join "-"
     else
       ""
-  
+
   $('#external-events div.external-event').each () ->
     eventObject = {
       title: $.trim $(this).text()
@@ -62,7 +62,7 @@
       title: eventObject.title
       repeat: eventObject.repeat
       start: formatted_date eventObject.start
-    }  
+    }
     if eventObject.end
       data["end"] = formatted_date eventObject.end
     if eventObject.allDay
@@ -72,16 +72,16 @@
     $.ajax
       url: "#{events_path}"
       type: 'POST'
-      beforeSend: (xhr) -> 
+      beforeSend: (xhr) ->
         xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))
       data: data
       success: callback
 
-  load = () ->      
+  load = () ->
     $.get("#{events_path}").success (response) ->
       $.each response, (index, item) ->
-        $('#calendar').fullCalendar 'renderEvent', item, true    
-  
+        $('#calendar').fullCalendar 'renderEvent', item, true
+
   update = (eventElement, callback) ->
     data = {
       "_method": "put"
@@ -89,29 +89,29 @@
       repeat: eventElement.repeat
       start: formatted_date eventElement.start
     }
-    if eventElement.end 
+    if eventElement.end
       data["end"] = formatted_date eventElement.end
     if eventElement.allDay
-      data["allDay"] = eventElement.allDay 
-    else 
+      data["allDay"] = eventElement.allDay
+    else
       data["allDay"] = false
     $.ajax
       url: "#{events_path}/" + eventElement.id
       type: 'POST'
-      beforeSend: (xhr) -> 
+      beforeSend: (xhr) ->
         xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))
       data: data
       success: callback
-  
+
   remove = (eventElement, callback) ->
     $.ajax
       url: "#{events_path}/" + eventElement.id
       type: 'POST'
-      beforeSend: (xhr) -> 
+      beforeSend: (xhr) ->
         xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))
       data: {"_method": "delete"}
       success: callback
-  
+
   calendar = $('#calendar').fullCalendar
     editable: true,
     selectable: true,
@@ -123,7 +123,7 @@
       right: 'month,agendaWeek,agendaDay'
     eventClick: (calEvent, jsEvent, view) ->
       dialog.dialog "option", "event", calEvent
-      dialog.dialog 'open'      
+      dialog.dialog 'open'
     eventDrop: (event, dayDelta, minuteDelta, allDay, revertFunc) ->
       ext = if allDay then {} else {allDay: allDay}
       msg = if allDay then "Event is now all-day" else "Event has a time-of-day"
@@ -131,7 +131,7 @@
       if (!confirm("Are you sure about this change?"))
         revertFunc()
       else
-        update $.extend(event, ext)        
+        update $.extend(event, ext)
       calendar.fullCalendar 'unselect'
     eventResize: (event,dayDelta,minuteDelta,revertFunc) ->
       if(!confirm("is this okay?"))
@@ -143,8 +143,8 @@
       dialog.dialog "option", "event", {start: startDate, end: endDate, allDay: allDay}
       dialog.dialog "open"
     drop: (date, allDay) ->
-      _event = $(this)        
-      originalEventObject = _event.data 'eventObject'   
+      _event = $(this)
+      originalEventObject = _event.data 'eventObject'
       copiedEventObject = $.extend {}, originalEventObject
       copiedEventObject.start = date
       copiedEventObject.allDay = allDay
@@ -155,7 +155,7 @@
 
       insertEvent copiedEventObject, (response) ->
         $('#calendar').fullCalendar('renderEvent', $.extend(copiedEventObject, {id: response.id} ), true)
-    
+
   dialog.dialog
     modal: true
     autoOpen: false
@@ -193,7 +193,7 @@
               update( $.extend(event, {className: event.repeat.toLowerCase()}) , () ->
                 dialog.dialog "close"
               )
-      } 
+      }
       {
         text: "Delete"
         click: () ->
@@ -203,12 +203,13 @@
               calendar.fullCalendar 'removeEvents', event.id
               dialog.dialog "close"
       }
-      {   
+      {
         text: "Cancel"
-        click: () -> 
+        click: () ->
           $(this).dialog "close"
       }
     ]
 
   load()
   $('.live-tipsy').tipsy {live: true, gravity: 'w'}
+
