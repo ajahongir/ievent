@@ -12,6 +12,7 @@ end
 
 group :production do
   gem "pg", "~> 0.13.2"
+  gem "sqlite3", "~> 1.3.5"
 end
 
 gem 'json'
@@ -22,6 +23,8 @@ gem 'therubyracer'
 
 gem 'acts_as_state_machine'
 gem 'devise'
+
+gem 'whenever', :require => false
 
 gem 'coffee-filter'
 
